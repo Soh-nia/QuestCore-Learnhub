@@ -80,10 +80,6 @@ export default async function CoursePage({ params }: Props) {
       path: 'chapters',
       options: { sort: { position: 1 } },
     })
-    .populate({
-      path: 'quizzes',
-      options: { sort: { createdAt: -1 } },
-    })
     .lean<CourseI>();
 
   if (!course) {
@@ -99,34 +95,30 @@ export default async function CoursePage({ params }: Props) {
     description: course.description || null,
     imageUrl: course.imageUrl,
     price: course.price ?? null,
-    attachments: course.attachments.map((attachment) => ({
-      _id: attachment._id.toString(),
-      name: attachment.name,
-      url: attachment.url,
-      courseId: attachment.courseId.toString(),
-      createdAt: attachment.createdAt,
-      updatedAt: attachment.updatedAt,
-    })),
-    chapters: course.chapters.map((chapter) => ({
-      _id: chapter._id.toString(),
-      title: chapter.title,
-      description: chapter.description || null,
-      videoUrl: chapter.videoUrl || null,
-      position: chapter.position,
-      isPublished: chapter.isPublished,
-      isFree: chapter.isFree,
-      courseId: chapter.courseId.toString(),
-      createdAt: chapter.createdAt,
+    attachments: Array.isArray(course.attachments)
+    ? course.attachments.map((attachment) => ({
+        _id: attachment._id.toString(),
+        name: attachment.name,
+        url: attachment.url,
+        courseId: attachment.courseId.toString(),
+        createdAt: attachment.createdAt,
+        updatedAt: attachment.updatedAt,
+      }))
+    : [],
+  chapters: Array.isArray(course.chapters)
+    ? course.chapters.map((chapter) => ({
+        _id: chapter._id.toString(),
+        title: chapter.title,
+        description: chapter.description || null,
+        videoUrl: chapter.videoUrl || null,
+        position: chapter.position,
+        isPublished: chapter.isPublished,
+        isFree: chapter.isFree,
+        courseId: chapter.courseId.toString(),
+        createdAt: chapter.createdAt,
       updatedAt: chapter.updatedAt,
-    })),
-    quizzes: course.quizzes.map((quiz) => ({
-      _id: quiz._id.toString(),
-      courseId: quiz.courseId.toString(),
-      title: quiz.title,
-      isRequiredForCompletion: quiz.isRequiredForCompletion,
-      createdAt: quiz.createdAt,
-      updatedAt: quiz.updatedAt,
-    })),
+    }))
+    : [],
   };
 
   const categories = await Category.find({})

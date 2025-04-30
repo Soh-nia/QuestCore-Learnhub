@@ -26,16 +26,24 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
   const [state, formAction] = useActionState(updateCourse, initialState);
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCategoryId, setSelectedCategoryId] = useState(initialData.categoryId || '');
+  const [isComboboxOpen, setIsComboboxOpen] = useState(false); // Track combobox state
   const router = useRouter();
 
   const toggleEdit = () => setIsEditing((current) => !current);
 
-  // Initialize Preline Combobox
+  // Initialize Preline Combobox and handle open/close events
   useEffect(() => {
     import('preline/preline').then(({ HSComboBox }) => {
       console.log('HSComboBox loaded:', !!HSComboBox);
       if (isEditing) {
         HSComboBox.autoInit();
+
+        // Add event listeners for combobox open/close
+        const combobox = document.querySelector('[data-hs-combo-box]');
+        if (combobox) {
+          combobox.addEventListener('open', () => setIsComboboxOpen(true));
+          combobox.addEventListener('close', () => setIsComboboxOpen(false));
+        }
       }
     });
   }, [isEditing]);
@@ -59,6 +67,7 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
         ? categories.find((cat) => cat._id === categoryId)?.name || ''
         : '';
     }
+    setIsComboboxOpen(false); // Close combobox on selection
   };
 
   return (
@@ -83,7 +92,7 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
       </div>
       {!initialData.categoryId && !isEditing ? (
         <p className="text-sm text-gray-600 dark:text-neutral-400 italic">
-            No category selected
+          No category selected
         </p>
       ) : (
         <p className="text-sm mt-2 text-gray-800 dark:text-neutral-200">
@@ -96,10 +105,12 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
           <div className="w-full inline-flex relative" data-hs-combo-box="">
             <div className="relative w-full">
               <input
+                id="category-combobox"
                 className="py-2.5 sm:py-3 px-4 block w-full border-gray-200 rounded-lg sm:text-sm focus:border-lime-500 focus:ring-lime-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                 type="text"
                 role="combobox"
-                aria-expanded="false"
+                aria-controls="category-combobox-output"
+                aria-expanded={isComboboxOpen}
                 defaultValue={
                   selectedCategoryId
                     ? categories.find((cat) => cat._id === selectedCategoryId)?.name || ''
@@ -127,6 +138,7 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
               </div>
             </div>
             <div
+              id="category-combobox-output"
               className="absolute z-50 w-full max-h-72 p-1 space-y-0.5 bg-white border border-gray-200 rounded-lg overflow-hidden overflow-y-auto dark:bg-neutral-900 dark:border-neutral-700 hidden"
               data-hs-combo-box-output=""
             >

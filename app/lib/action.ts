@@ -101,9 +101,40 @@ export async function fetchInstructorCourses({
             isPublished: course.isPublished,
             categoryId: course.categoryId ? course.categoryId.toString() : null,
             categoryName: course.categoryId?.name || null,
-            quizzes: course.quizzes || [],
-            attachments: course.attachments || [],
-            chapters: course.chapters || [],
+            quizzes: Array.isArray(course.quizzes)
+                ? course.quizzes.map((quiz) => ({
+                    _id: quiz._id.toString(), // Ensure quiz _id is a string
+                    courseId: quiz.courseId.toString(), // Ensure courseId is a string
+                    title: quiz.title,
+                    isRequiredForCompletion: quiz.isRequiredForCompletion,
+                    createdAt: quiz.createdAt,
+                    updatedAt: quiz.updatedAt,
+                }))
+                : [],
+            attachments: Array.isArray(course.attachments)
+                ? course.attachments.map((attachment) => ({
+                    _id: attachment._id.toString(), // Ensure attachment _id is a string
+                    name: attachment.name,
+                    url: attachment.url,
+                    courseId: attachment.courseId.toString(), // Ensure courseId is a string
+                    createdAt: attachment.createdAt,
+                    updatedAt: attachment.updatedAt,
+                }))
+                : [],
+            chapters: Array.isArray(course.chapters)
+                ? course.chapters.map((chapter) => ({
+                    _id: chapter._id.toString(), // Ensure chapter _id is a string
+                    title: chapter.title,
+                    description: chapter.description || null,
+                    videoUrl: chapter.videoUrl || null,
+                    position: chapter.position,
+                    isPublished: chapter.isPublished,
+                    isFree: chapter.isFree,
+                    courseId: chapter.courseId.toString(), // Ensure courseId is a string
+                    createdAt: chapter.createdAt,
+                    updatedAt: chapter.updatedAt,
+                }))
+                : [],
             createdAt: course.createdAt,
             updatedAt: course.updatedAt,
         }));

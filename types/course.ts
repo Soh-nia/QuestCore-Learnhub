@@ -1,3 +1,5 @@
+import mongoose from 'mongoose';
+
 export interface AttachmentI {
     _id: string;
     name: string;
@@ -50,8 +52,8 @@ export interface CourseI {
     categoryName: string | null;
     userId: string;
     quizzes: QuizI[];
-    chapters: ChapterI[]
-    attachments: AttachmentI[]
+    chapters: ChapterI[];
+    attachments: AttachmentI[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -65,9 +67,35 @@ export interface RawCourse {
     price?: number | null;
     isPublished: boolean;
     categoryId?: { toString: () => string; name: string } | null;
-    chapters: ChapterI[]
-    quizzes?: QuizI[];
+    chapters: (ChapterI & { courseId: mongoose.Types.ObjectId })[];
+    quizzes: QuizI[];
     attachments: AttachmentI[]
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface RawCourseHome {
+    _id: mongoose.Types.ObjectId;
+    title: string;
+    description: string | null;
+    imageUrl: string | null;
+    price: number | null;
+    isPublished: boolean;
+    userId: {
+        _id: mongoose.Types.ObjectId;
+        name: string;
+        image: string | null;
+    } | null;
+    categoryId: mongoose.Types.ObjectId;
+    chapters: {
+        _id: mongoose.Types.ObjectId;
+        title: string;
+    }[];
+    __v?: number;
+}
+
+export interface RawCategory {
+    _id: mongoose.Types.ObjectId;
+    name: string;
+    __v?: number;
 }

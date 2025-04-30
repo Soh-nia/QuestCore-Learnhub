@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import mongoose from 'mongoose';
 import connectMongoose from '@/lib/mongoose-connect';
 import Quiz from '@/models/Quiz';
@@ -16,9 +16,13 @@ interface QuestionLean {
     __v?: number;
 }
 
+interface Params {
+    quizId: string;
+}
+
 export async function GET(
-    request: Request,
-    { params }: { params: { quizId: string } }
+    request: NextRequest,
+    context: { params: Promise<Params> } // Update type to reflect Promise
 ) {
     try {
         const session = await auth();
@@ -28,6 +32,8 @@ export async function GET(
 
         await connectMongoose();
 
+        // Await the params to resolve the Promise
+        const params = await context.params;
         const quiz = await Quiz.findById(params.quizId);
         if (!quiz) {
             return NextResponse.json({ error: 'Quiz not found' }, { status: 404 });
