@@ -154,7 +154,7 @@ export default async function CoursePage({ params }: Props) {
       <div className="max-w-[85rem] px-4 sm:px-4 lg:px-6 mx-auto dark:bg-neutral-900">
         <div className="mx-auto mb-8 lg:mb-10">
           <h2 className="text-3xl text-gray-800 font-bold dark:text-neutral-200">
-            Course: <span className="text-lime-500">{serializedCourse.title}</span>
+            Course: <span className="text-lime-600">{serializedCourse.title}</span>
           </h2>
         </div>
 
@@ -184,7 +184,7 @@ export default async function CoursePage({ params }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10 px-4">
             <div>
               <div className="flex items-center gap-x-2">
-                <RiApps2AiLine className="h-6 w-6 text-lime-500" />
+                <RiApps2AiLine className="h-6 w-6 text-lime-600" />
                 <h3 className="text-1xl font-medium text-gray-800 dark:text-neutral-200">
                   Customize your course
                 </h3>
@@ -214,7 +214,7 @@ export default async function CoursePage({ params }: Props) {
             <div className="space-y-6">
               <div>
                 <div className="flex items-center gap-x-2">
-                  <FaListCheck className="h-6 w-6 text-lime-500" />
+                  <FaListCheck className="h-6 w-6 text-lime-600" />
                   <h3 className="text-1xl font-medium text-gray-800 dark:text-neutral-200">
                     Course Chapters
                   </h3>
@@ -226,7 +226,7 @@ export default async function CoursePage({ params }: Props) {
               </div>
               <div>
                 <div className="flex items-center gap-x-2">
-                  <FaDollarSign className="h-6 w-6 text-lime-500" />
+                  <FaDollarSign className="h-6 w-6 text-lime-600" />
                   <h3 className="text-1xl font-medium text-gray-800 dark:text-neutral-200">
                     Sell your course
                   </h3>
@@ -239,7 +239,7 @@ export default async function CoursePage({ params }: Props) {
               </div>
               <div>
                 <div className="flex items-center gap-x-2">
-                  <FaRegFile className="h-6 w-6 text-lime-500" />
+                  <FaRegFile className="h-6 w-6 text-lime-600" />
                   <h3 className="text-1xl font-medium text-gray-800 dark:text-neutral-200">
                     Resources & Attachments
                   </h3>

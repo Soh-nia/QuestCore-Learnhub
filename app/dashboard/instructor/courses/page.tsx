@@ -73,13 +73,13 @@ export default async function InstructorCourses({
                 type="text"
                 name="search"
                 defaultValue={search}
-                className="py-2.5 px-4 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-cyan-500 focus:ring-cyan-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                className="py-2.5 px-4 block w-full bg-gray-100 border-transparent rounded-lg text-sm focus:border-cyan-600 focus:ring-cyan-600 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-700 dark:border-transparent dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                 placeholder="Search Course"
               />
             </form>
             <Link
               href="/dashboard/instructor/courses/create"
-              className="flex items-center justify-center rounded-lg bg-lime-500 px-5 py-2.5 text-sm sm:text-base font-medium text-white transition-colors hover:bg-lime-600"
+              className="flex items-center justify-center rounded-lg bg-lime-600 px-5 py-2.5 text-sm sm:text-base font-medium text-white transition-colors hover:bg-lime-700"
             >
               <FaPlus className="mr-2 h-4 w-4" />
               New Course

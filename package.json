@@ -24,6 +24,7 @@
     "easymde": "^2.20.0",
     "html-react-parser": "^5.2.3",
     "jquery": "^3.7.1",
+    "lucide-react": "^0.503.0",
     "mongodb": "^6.15.0",
     "mongoose": "^8.13.2",
     "next": "15.3.0",

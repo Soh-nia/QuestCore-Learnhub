@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import PrelineScriptWrapper from './components/PrelineScriptWrapper';
 import { Toaster } from 'react-hot-toast';
+import { SessionProvider } from 'next-auth/react';
 
 
 export const metadata: Metadata = {
@@ -19,9 +20,11 @@ export default function RootLayout({
       <body
         className=''
       >
-        {children}
-        <PrelineScriptWrapper />
-        <Toaster />
+        <SessionProvider>
+          {children}
+          <PrelineScriptWrapper />
+          <Toaster />
+        </SessionProvider>
       </body>
     </html>
   );

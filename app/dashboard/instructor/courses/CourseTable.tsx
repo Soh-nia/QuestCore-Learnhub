@@ -81,7 +81,7 @@ const CourseTable = ({ courses }: CourseTableProps) => {
                     <div className="flex items-center gap-x-2">
                       <Link
                         href={`/dashboard/instructor/courses/${course._id}`}
-                        className="flex items-center rounded-lg bg-lime-500 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-lime-600"
+                        className="flex items-center rounded-lg bg-lime-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-lime-700"
                       >
                         <LuPencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
@@ -89,7 +89,7 @@ const CourseTable = ({ courses }: CourseTableProps) => {
 
                       <Link
                         href={`/dashboard/instructor/courses/${course._id}/quiz`}
-                        className="flex items-center rounded-lg bg-cyan-500 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-600"
+                        className="flex items-center rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-700"
                       >
                         <MdQuiz className="h-4 w-4 mr-1" />
                         Quiz

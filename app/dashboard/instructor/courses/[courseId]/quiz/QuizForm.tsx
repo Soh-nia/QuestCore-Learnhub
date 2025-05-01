@@ -304,7 +304,7 @@ const QuizForm = ({ courseId, quizzes }: QuizFormProps) => {
           <button
             type="button"
             onClick={addQuestion}
-            className="mt-4 flex items-center rounded-lg bg-lime-500 px-4 py-2 text-sm font-medium text-white hover:bg-lime-600 disabled:opacity-50"
+            className="mt-4 flex items-center rounded-lg bg-lime-600 px-4 py-2 text-sm font-medium text-white hover:bg-lime-700 disabled:opacity-50"
             disabled={isPending}
           >
             <FaPlus className="h-4 w-4 mr-2" />
@@ -322,7 +322,7 @@ const QuizForm = ({ courseId, quizzes }: QuizFormProps) => {
           </button>
           <button
             type="submit"
-            className="rounded-lg bg-cyan-500 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-600 disabled:opacity-50"
+            className="rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white hover:bg-cyan-700 disabled:opacity-50"
             disabled={isPending}
           >
             {isPending

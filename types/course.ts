@@ -69,7 +69,7 @@ export interface RawCourse {
     categoryId?: { toString: () => string; name: string } | null;
     chapters: (ChapterI & { courseId: mongoose.Types.ObjectId })[];
     quizzes: QuizI[];
-    attachments: AttachmentI[]
+    attachments: AttachmentI[];
     createdAt: Date;
     updatedAt: Date;
 }
@@ -86,7 +86,10 @@ export interface RawCourseHome {
         name: string;
         image: string | null;
     } | null;
-    categoryId: mongoose.Types.ObjectId;
+    categoryId: {
+        _id: mongoose.Types.ObjectId;
+        name: string;
+    } | null;
     chapters: {
         _id: mongoose.Types.ObjectId;
         title: string;

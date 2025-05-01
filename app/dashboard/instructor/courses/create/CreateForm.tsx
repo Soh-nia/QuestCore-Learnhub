@@ -29,7 +29,7 @@ const CreateForm = () => {
                     <input type="text"
                     name="title"
                     id="title"
-                    className="py-2.5 px-4 block w-full border-transparent rounded-lg focus:border-lime-500 focus:ring-lime-500 dark:bg-neutral-900 dark:border-transparent dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
+                    className="py-2.5 px-4 block w-full border-transparent rounded-lg focus:border-lime-600 focus:ring-lime-600 dark:bg-neutral-900 dark:border-transparent dark:text-neutral-400 dark:placeholder-neutral-500 dark:focus:ring-neutral-600"
                     placeholder="e.g 'Advanced courses'" />
                     <div id="title-error" aria-live="polite" aria-atomic="true">
                         {state.errors?.title &&

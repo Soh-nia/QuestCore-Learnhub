@@ -14,6 +14,10 @@
 @import "uploadthing/tw/v4";
 @source "../node_modules/@uploadthing/react/dist";
 
-/* body {
-  height: 100%;
-} */
+.hero-gradient {
+  background: linear-gradient(90deg, #06b6d4 0%, #84cc16 100%);
+}
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
