@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { signIn } from 'next-auth/react';
 import Footer from '@/app/components/Footer';
-import Header from '@/app/components/Header';
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import Spinner from '@/app/components/Spinner';
 
@@ -41,19 +40,23 @@ export default function SignIn() {
     try {
       setIsSubmitting(true);
       setError('');
+      const courseId = localStorage.getItem('enrollCourseId');
+      const callbackUrl = courseId ? `/courses/${courseId}/payment` : '/dashboard';
       const result = await signIn('credentials', {
         email: data.email,
         password: data.password,
         redirect: false,
+        callbackUrl,
       });
       if (result?.error) {
         setError(result.error);
       } else {
-        router.push('/dashboard');
+        localStorage.removeItem('enrollCourseId');
+        router.push(callbackUrl);
       }
     } catch (err) {
       setError('An unexpected error occurred');
-      console.log(err);
+      console.error('Sign-in error:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -63,9 +66,11 @@ export default function SignIn() {
     try {
       setIsSubmittingGoogle(true);
       setError('');
-      await signIn('google', { callbackUrl: '/dashboard' });
+      const courseId = localStorage.getItem('enrollCourseId');
+      const callbackUrl = courseId ? `/courses/${courseId}/payment` : '/dashboard';
+      await signIn('google', { callbackUrl });
     } catch (err) {
-      console.log(err);
+      console.error('Google sign-in error:', err);
       setError('Failed to sign in with Google');
     } finally {
       setIsSubmittingGoogle(false);
@@ -74,7 +79,6 @@ export default function SignIn() {
 
   return (
     <div className="overflow-hidden">
-      <Header />
       <div className="max-w-lg px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-2xs dark:bg-neutral-900 dark:border-neutral-700">
           <div className="p-4 sm:p-7">

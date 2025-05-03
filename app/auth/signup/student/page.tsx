@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import axios from 'axios';
 import Footer from '@/app/components/Footer';
-import Header from '@/app/components/Header';
+// import Header from '@/app/components/Header';
 import { IoEyeOutline, IoEyeOffOutline } from 'react-icons/io5';
 import { userSchema } from '@/lib/validationSchemas';
 import Spinner from '@/app/components/Spinner';
@@ -53,7 +53,7 @@ export default function InstructorSignUp() {
 
   return (
     <div className="overflow-hidden">
-      <Header />
+      {/* <Header /> */}
       <div className="max-w-lg px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
         <div className="mt-7 bg-white border border-gray-200 rounded-xl shadow-2xs dark:bg-neutral-900 dark:border-neutral-700">
           <div className="p-4 sm:p-7">

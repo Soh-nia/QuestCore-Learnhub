@@ -79,7 +79,7 @@ export default async function InstructorCourses({
             </form>
             <Link
               href="/dashboard/instructor/courses/create"
-              className="flex items-center justify-center rounded-lg bg-lime-600 px-5 py-2.5 text-sm sm:text-base font-medium text-white transition-colors hover:bg-lime-700"
+              className="flex items-center justify-center rounded-lg bg-gray-800 px-5 py-2.5 text-sm sm:text-base font-medium text-white transition-colors hover:bg-gray-700"
             >
               <FaPlus className="mr-2 h-4 w-4" />
               New Course

@@ -67,6 +67,7 @@ export interface RawCourse {
     price?: number | null;
     isPublished: boolean;
     categoryId?: { toString: () => string; name: string } | null;
+    categoryName: string | null;
     chapters: (ChapterI & { courseId: mongoose.Types.ObjectId })[];
     quizzes: QuizI[];
     attachments: AttachmentI[];

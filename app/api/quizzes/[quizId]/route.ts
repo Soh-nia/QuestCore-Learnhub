@@ -22,7 +22,7 @@ interface Params {
 
 export async function GET(
     request: NextRequest,
-    context: { params: Promise<Params> } // Update type to reflect Promise
+    context: { params: Promise<Params> }
 ) {
     try {
         const session = await auth();

@@ -4,6 +4,10 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Lusitana } from 'next/font/google';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { toast } from 'react-hot-toast';
+
 
 const lusitana = Lusitana({ subsets: ['latin'], weight: ['400', '700'], });
 
@@ -20,6 +24,7 @@ interface Course {
     price: number | null;
     categoryName: string | null;
     chapterCount: number;
+    // categoryId: string;
     instructorName: string;
     instructorImage: string | null;
 }
@@ -39,7 +44,10 @@ interface HomeClientProps {
 export default function HomeClient({ categories, initialCoursesByCategory }: HomeClientProps) {
     const [selectedCategory, setSelectedCategory] = useState(categories[0]?._id || '');
     const [courses, setCourses] = useState<Course[]>(initialCoursesByCategory[0]?.courses || []);
-    // const [totalCourses, setTotalCourses] = useState(initialCoursesByCategory[0]?.totalCourses || 0);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null);
+    const router = useRouter();
+    const { data: session, status } = useSession();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -74,8 +82,78 @@ export default function HomeClient({ categories, initialCoursesByCategory }: Hom
         }
     }, [selectedCategory, initialCoursesByCategory]);
 
+    const handleEnroll = async (course: Course) => {
+      setLoadingCourseId(course._id);
+      if (status !== 'authenticated') {
+        // Store courseId in localStorage to redirect after signin
+        localStorage.setItem('enrollCourseId', course._id);
+        router.push('/auth/signin');
+        return;
+      }
+  
+      if (session?.user?.role !== 'student') {
+        setIsModalOpen(true);
+        return;
+      }
+      
+      if (course.price) {
+        router.push(`/courses/${course._id}/payment`);
+      } else {
+        try {
+          const response = await fetch('/api/enroll', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ courseId: course._id }),
+          });
+          if (response.ok) {
+            toast.success('Enrolled successfully!');
+            router.push('/dashboard/student/courses');
+          } else {
+            toast.error('Failed to enroll');
+          }
+        } catch (error) {
+          console.error('Enrollment error:', error);
+          toast.error('Something went wrong');
+          setLoadingCourseId(null);
+        }
+      }
+    };
+
+    const handleStudentSignup = () => {
+      setIsModalOpen(false);
+      router.push('/auth/signup/student');
+    };
+
   return (
     <>
+    {/* Modal for Non-Student Prompt */}
+    {isModalOpen && (
+      <div className="fixed inset-0 backdrop-blur-xs bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 max-w-md w-full shadow-xl">
+          <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
+            Student Enrollment Required
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
+            Only students can enroll in courses. Please sign up as a student to proceed.
+          </p>
+          <div className="flex justify-end gap-4">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleStudentSignup}
+              className="px-4 py-2 bg-gray-800 dark:bg-gray-100 dark:text-gray-900 text-white rounded hover:bg-lime-700"
+            >
+              Sign Up as Student
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
     <div className="bg-gray-50 dark:bg-neutral-800 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Category Dropdown */}
@@ -165,12 +243,38 @@ export default function HomeClient({ categories, initialCoursesByCategory }: Hom
                       <span className="text-lime-600 font-bold">
                         {course.price ? `$${course.price.toFixed(2)}` : 'Free'}
                       </span>
-                      <Link
-                        href={`/courses/${course._id}`}
-                        className="bg-lime-100 hover:bg-lime-200 text-lime-600 px-3 py-1 rounded-full text-sm transition duration-150 ease-in-out"
+                      <button
+                        onClick={() => handleEnroll(course)}
+                        disabled={loadingCourseId === course._id}
+                        className={`flex items-center justify-center bg-lime-100 font-semibold text-lg hover:bg-lime-200 text-lime-600 px-3 py-1 rounded-full transition duration-150 ease-in-out ${
+                          loadingCourseId === course._id ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
                       >
-                        View Course
-                      </Link>
+                        {loadingCourseId === course._id ? (
+                          <svg
+                            className="animate-spin h-5 w-5 text-lime-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                        ) : (
+                          'Enroll'
+                        )}
+                      </button>
                     </div>
                   </div>
                 </div>

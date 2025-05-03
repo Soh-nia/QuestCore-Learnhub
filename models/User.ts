@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: false },
     image: { type: String, required: false },
     role: { type: String, enum: ['instructor', 'student'], required: true },
+    enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
     createdAt: { type: Date, default: Date.now },
 });
 

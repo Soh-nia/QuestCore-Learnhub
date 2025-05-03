@@ -5,6 +5,10 @@ import { usePathname } from 'next/navigation';
 import { FiHome, FiBookOpen } from 'react-icons/fi';
 import classnames from 'classnames';
 import { ComponentType, SVGProps } from 'react';
+import { PiStudentBold } from "react-icons/pi";
+import { GrCertificate } from "react-icons/gr";
+
+
 
 // Define route interface for TypeScript
 interface Route {
@@ -16,11 +20,13 @@ interface Route {
 export const instructorRoutes: Route[] = [
   { icon: FiHome, label: 'Overview', href: '/dashboard/instructor' },
   { icon: FiBookOpen, label: 'Courses', href: '/dashboard/instructor/courses' },
+  { icon: PiStudentBold, label: 'Enrollments', href: '/dashboard/instructor/enrollments' },
 ];
 
 export const studentRoutes: Route[] = [
   { icon: FiHome, label: 'Analytics', href: '/dashboard/student' },
   { icon: FiBookOpen, label: 'Courses', href: '/dashboard/student/courses' },
+  { icon: GrCertificate, label: 'Certificates', href: '/dashboard/student/certificates' },
 ];
 
 const SideBarLinks = () => {

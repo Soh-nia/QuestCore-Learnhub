@@ -5,7 +5,7 @@ import { Logo } from './Logo';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
 
 const Header = () => {
@@ -16,9 +16,9 @@ const Header = () => {
     return href === '/' ? pathname === href : pathname.startsWith(href);
   };
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
-  };
+  // const handleSignOut = async () => {
+  //   await signOut({ callbackUrl: '/' });
+  // };
 
   return (
     <header className="flex flex-wrap lg:justify-start lg:flex-nowrap z-50 w-full py-3">
@@ -108,92 +108,104 @@ const Header = () => {
           </div>
           {/* User Dropdown or Sign In Button */}
           {status === 'authenticated' ? (
-            <div className="hs-dropdown p-2">
-              <button
-                id="hs-dropdown-user-menu"
-                type="button"
-                className="hs-dropdown-toggle inline-flex items-center gap-x-2 text-sm font-medium rounded-full bg-white text-gray-800 dark:bg-neutral-700 dark:text-white"
-                aria-haspopup="menu"
-                aria-expanded="false"
-                aria-label="User menu"
-              >
-                <Image
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-x-3.5 py-2 px-3 text-sm font-medium rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
+            >
+              <Image
                   className="w-8 h-8 rounded-full"
                   src={session?.user?.image ?? '/default.png'}
                   width={32}
                   height={32}
                   alt="User avatar"
-                />
-                <svg
-                  className="hs-dropdown-open:rotate-180 size-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="m6 9 6 6 6-6" />
-                </svg>
-              </button>
+              />
+            </Link>
+            // <div className="hs-dropdown p-2">
+            //   <button
+            //     id="hs-dropdown-custom-trigger"
+            //     type="button"
+            //     className="hs-dropdown-toggle inline-flex items-center gap-x-2 text-sm font-medium rounded-full bg-white text-gray-800 dark:bg-neutral-700 dark:text-white"
+            //     aria-haspopup="menu"
+            //     aria-expanded="false"
+            //     aria-label="User menu"
+            //   >
+            //     <Image
+            //       className="w-8 h-8 rounded-full"
+            //       src={session?.user?.image ?? '/default.png'}
+            //       width={32}
+            //       height={32}
+            //       alt="User avatar"
+            //     />
+            //     <svg
+            //       className="hs-dropdown-open:rotate-180 size-4"
+            //       xmlns="http://www.w3.org/2000/svg"
+            //       width="24"
+            //       height="24"
+            //       viewBox="0 0 24 24"
+            //       fill="none"
+            //       stroke="currentColor"
+            //       strokeWidth="2"
+            //       strokeLinecap="round"
+            //       strokeLinejoin="round"
+            //     >
+            //       <path d="m6 9 6 6 6-6" />
+            //     </svg>
+            //   </button>
 
-              <div
-                className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-48 bg-white shadow-md rounded-lg mt-2 dark:bg-neutral-800 dark:border dark:border-neutral-700"
-                role="menu"
-                aria-orientation="vertical"
-                aria-labelledby="hs-dropdown-user-menu"
-              >
-                <div className="p-1">
-                  <Link
-                    href="/dashboard"
-                    className="w-full flex items-center gap-x-3.5 py-2 px-3 text-sm font-medium rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
-                  >
-                    <svg
-                      className="shrink-0 size-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
-                      <path d="M3 9h18" />
-                      <path d="M9 21V9" />
-                    </svg>
-                    Dashboard
-                  </Link>
-                  <button
-                    onClick={handleSignOut}
-                    className="w-full flex items-center gap-x-3.5 py-2 px-3 text-sm font-medium rounded-lg text-gray-800 hover:bg-red-100 hover:text-red-600 focus:outline-none focus:bg-red-100 dark:text-neutral-400 dark:hover:bg-red-900 dark:hover:text-red-200 dark:focus:bg-red-900"
-                  >
-                    <svg
-                      className="shrink-0 size-4"
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" x2="9" y1="12" y2="12" />
-                    </svg>
-                    Sign Out
-                  </button>
-                </div>
-              </div>
-            </div>
+            //   <div
+            //     className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-48 bg-white shadow-md rounded-lg mt-2 dark:bg-neutral-800 dark:border dark:border-neutral-700"
+            //     role="menu"
+            //     aria-orientation="vertical"
+            //     aria-labelledby="hs-dropdown-custom-trigger"
+            //   >
+            //     <div className="p-1">
+            //       <Link
+            //         href="/dashboard"
+            //         className="flex items-center gap-x-3.5 py-2 px-3 text-sm font-medium rounded-lg text-gray-800 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700"
+            //       >
+            //         <svg
+            //           className="shrink-0 size-4"
+            //           xmlns="http://www.w3.org/2000/svg"
+            //           width="24"
+            //           height="24"
+            //           viewBox="0 0 24 24"
+            //           fill="none"
+            //           stroke="currentColor"
+            //           strokeWidth="2"
+            //           strokeLinecap="round"
+            //           strokeLinejoin="round"
+            //         >
+            //           <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+            //           <path d="M3 9h18" />
+            //           <path d="M9 21V9" />
+            //         </svg>
+            //         Dashboard
+            //       </Link>
+            //       <button
+            //         onClick={handleSignOut}
+            //         className="w-full flex items-center gap-x-3.5 py-2 px-3 text-sm font-medium rounded-lg text-gray-800 hover:bg-red-100 hover:text-red-600 focus:outline-none focus:bg-red-100 dark:text-neutral-400 dark:hover:bg-red-900 dark:hover:text-red-200 dark:focus:bg-red-900"
+            //       >
+            //         <svg
+            //           className="shrink-0 size-4"
+            //           xmlns="http://www.w3.org/2000/svg"
+            //           width="24"
+            //           height="24"
+            //           viewBox="0 0 24 24"
+            //           fill="none"
+            //           stroke="currentColor"
+            //           strokeWidth="2"
+            //           strokeLinecap="round"
+            //           strokeLinejoin="round"
+            //         >
+            //           <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            //           <polyline points="16 17 21 12 16 7" />
+            //           <line x1="21" x2="9" y1="12" y2="12" />
+            //         </svg>
+            //         Sign Out
+            //       </button>
+            //     </div>
+            //   </div>
+            // </div>
           ) : (
             <Link
               href="/auth/signin"
