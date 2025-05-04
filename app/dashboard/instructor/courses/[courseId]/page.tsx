@@ -17,6 +17,8 @@ import { CourseI } from '@/types/course';
 import ChapterForm from './_components/ChapterForm';
 import AlertBanner from '@/app/components/AlertBanner';
 import CourseAction from './_components/CourseAction';
+import Attachment from '@/models/Attachment';
+import Chapter from '@/models/Chapter';
 
 interface Props {
   params: Promise<{ courseId: string }>;
@@ -61,6 +63,13 @@ export default async function CoursePage({ params }: Props) {
 
   // Connect to MongoDB
   await connectMongoose();
+
+  try {
+      await Chapter.find().limit(0).exec();
+      await Attachment.find().limit(0).exec();
+    } catch (error) {
+      console.error('Error registering models:', error);
+    }
 
   const user = await User.findOne({ email: session.user.email });
   if (!user) {
