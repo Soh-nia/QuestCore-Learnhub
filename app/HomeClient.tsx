@@ -24,7 +24,6 @@ interface Course {
     price: number | null;
     categoryName: string | null;
     chapterCount: number;
-    // categoryId: string;
     instructorName: string;
     instructorImage: string | null;
 }
