@@ -21,6 +21,8 @@ interface Category {
   name: string;
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function Home() {
   await connectMongoose();
 
@@ -41,7 +43,7 @@ export default async function Home() {
       name: cat.name,
     }));
 
-  // Fetch initial courses (up to 4 per category)
+  // Fetch initial courses (up to 3 per category)
   const coursesByCategory = await Promise.all(
     categories.map(async (category) => {
       try {
@@ -71,7 +73,7 @@ export default async function Home() {
             categoryName: category.name,
             chapterCount: course.chapters?.length || 0,
             instructorName: course.userId?.name || 'Unknown Instructor',
-            instructorImage: course.userId?.image || '/default.png',
+            instructorImage: course.userId?.image || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
           })),
           totalCourses,
         };

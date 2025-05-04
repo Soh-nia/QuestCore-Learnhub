@@ -16,6 +16,8 @@ interface Category {
   name: string;
 }
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Explore Courses',
   description: 'Explore all our courses',
