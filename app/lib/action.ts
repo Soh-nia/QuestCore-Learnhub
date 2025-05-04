@@ -952,7 +952,7 @@ export async function createQuiz(formData: FormData): Promise<State> {
         const rawData = {
             courseId: formData.get('courseId') as string,
             title: formData.get('title') as string,
-            isRequiredForCompletion: formData.get('isRequiredForCompletion') === 'on',
+            isRequiredForCompletion: formData.get('isRequiredForCompletion') === 'true',
             questions: JSON.parse(formData.get('questions') as string),
         };
 
@@ -1035,7 +1035,7 @@ export async function updateQuiz(formData: FormData): Promise<State> {
             quizId: formData.get('quizId') as string,
             courseId: formData.get('courseId') as string,
             title: formData.get('title') as string,
-            isRequiredForCompletion: formData.get('isRequiredForCompletion') === 'on',
+            isRequiredForCompletion: formData.get('isRequiredForCompletion') === 'true',
             questions: JSON.parse(formData.get('questions') as string),
         };
 

@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 const quizSchema = new mongoose.Schema({
-    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
-    title: { type: String, required: true },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true, index: true },
+    title: { type: String, required: true, trim: true },
     isRequiredForCompletion: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },

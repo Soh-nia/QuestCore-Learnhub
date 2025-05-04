@@ -44,7 +44,10 @@ export default async function CoursesPage() {
   // Fetch all published courses
   const rawCourses = await Course.find({ isPublished: true })
     .populate('userId', 'name image')
-    .populate('chapters')
+    .populate({
+      path: 'chapters',
+      match: { isPublished: true },
+    })
     .populate('categoryId', 'name')
     .lean() as RawCourseHome[];
 
