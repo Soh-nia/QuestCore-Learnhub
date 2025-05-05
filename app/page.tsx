@@ -13,6 +13,8 @@ import MobileMockup from "./components/MobileMockup";
 import { FaAward, FaClock } from "react-icons/fa6";
 import { TbCertificate } from "react-icons/tb";
 import { RawCourseHome, RawCategory } from '@/types/course';
+import { auth } from '@/auth';
+import mongoose from 'mongoose';
 
 const lusitana = Lusitana({ subsets: ['latin'], weight: ['400', '700'], });
 
@@ -21,9 +23,15 @@ interface Category {
   name: string;
 }
 
+interface UserLean {
+  _id: string;
+  enrolledCourses: mongoose.Types.ObjectId[];
+}
+
 export const dynamic = 'force-dynamic'
 
 export default async function Home() {
+  const session = await auth();
   await connectMongoose();
 
   try {
@@ -31,6 +39,21 @@ export default async function Home() {
     await User.find().limit(0).exec();
   } catch (error) {
     console.error('Error registering models:', error);
+  }
+
+  // Fetch enrolled courses if the user is a student
+  let enrolledCourses: string[] = [];
+  if (session?.user?.role === 'student') {
+    try {
+      const user = await User.findOne({ email: session.user.email })
+        .select('enrolledCourses')
+        .lean() as UserLean | null;
+      if (user) {
+        enrolledCourses = user.enrolledCourses.map((id: mongoose.Types.ObjectId) => id.toString());
+      }
+    } catch (error) {
+      console.error('Error fetching enrolled courses:', error);
+    }
   }
 
     // Fetch all categories
@@ -73,7 +96,7 @@ export default async function Home() {
             categoryName: category.name,
             chapterCount: course.chapters?.length || 0,
             instructorName: course.userId?.name || 'Unknown Instructor',
-            instructorImage: course.userId?.image || 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80',
+            instructorImage: course.userId?.image || '/default.png',
           })),
           totalCourses,
         };
@@ -171,7 +194,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <HomeClient categories={categories} initialCoursesByCategory={coursesByCategory} />
+        <HomeClient categories={categories} initialCoursesByCategory={coursesByCategory} enrolledCourses={enrolledCourses} />
 
         <div className="relative overflow-hidden">
             <div className="max-w-[85rem] px-4 py-12 sm:px-6 lg:px-8 lg:py-16 mx-auto">

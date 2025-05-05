@@ -11,6 +11,7 @@ import Question from '@/models/Question';
 import mongoose from 'mongoose';
 import { FaCheckCircle } from 'react-icons/fa';
 import Quiz from '@/models/Quiz';
+import Chapter from '@/models/Chapter';
 
 // Define TypeScript interfaces for the data models
 interface Chapter {
@@ -81,7 +82,7 @@ export default async function StudentDashboard() {
     await UserProgress.find().limit(0).exec();
     await Question.find().limit(0).exec();
     await Quiz.find().limit(0).exec();
-    await Question.find().limit(0).exec();
+    await Chapter.find().limit(0).exec();
   } catch (error) {
     console.error('Error registering models:', error);
   }
