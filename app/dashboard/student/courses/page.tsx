@@ -68,6 +68,8 @@ export const metadata: Metadata = {
   description: 'View all your courses',
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentDashboard() {
   const session = await auth();
   if (!session || session.user.role !== 'student') {

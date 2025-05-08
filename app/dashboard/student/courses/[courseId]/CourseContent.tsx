@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './SideBar';
 import QuizSection from './QuizSection';
-import Confetti from '@/app/components/Confetti';
+import Confetti from '@/app/_components/Confetti';
 import { Chapter, Quiz, Attachment, ServerAction, QuizSubmitAction, QuizAnswersSubmitAction } from './page';
 import toast from 'react-hot-toast';
 

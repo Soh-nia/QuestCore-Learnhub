@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: 'Engage with your enrolled course content',
 };
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ courseId: string }>;
 }

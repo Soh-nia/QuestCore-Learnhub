@@ -23,6 +23,8 @@ export const metadata: Metadata = {
   description: 'Create or edit a quiz for your course',
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function QuizManagePage({
   params,
 }: {

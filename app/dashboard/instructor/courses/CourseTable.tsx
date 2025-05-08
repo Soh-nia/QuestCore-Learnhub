@@ -1,17 +1,18 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
 import { CourseI } from '@/types/course';
 import { PiDotsThreeOutlineFill } from "react-icons/pi";
 import { LuPencil } from 'react-icons/lu';
 import { MdQuiz } from "react-icons/md";
+import { memo } from "react";
+import LinkWithProgress from "@/app/_components/link-with-progress";
 
 interface CourseTableProps {
   courses: CourseI[];
 }
 
-const CourseTable = ({ courses }: CourseTableProps) => {
+const CourseTable = memo(function CourseTable({ courses }: CourseTableProps) {
   return (
     <div className="overflow-x-auto mx-0 sm:mx-4 my-6">
       <div className="p-1.5 min-w-full inline-block align-middle">
@@ -19,25 +20,46 @@ const CourseTable = ({ courses }: CourseTableProps) => {
           <table className="min-w-full divide-y divide-gray-200 dark:divide-neutral-700">
             <thead>
               <tr>
-                <th scope="col" className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Image
                 </th>
-                <th scope="col" className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Title
                 </th>
-                <th scope="col" className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Category
                 </th>
-                <th scope="col" className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Price
                 </th>
-                <th scope="col" className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Status
                 </th>
-                <th scope="col" className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="hidden sm:table-cell px-6 py-3 text-start text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   Created
                 </th>
-                <th scope="col" className="px-6 py-3 text-end text-sm font-medium text-gray-500 uppercase dark:text-neutral-500">
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-end text-sm font-medium text-gray-500 uppercase dark:text-neutral-500"
+                >
                   <PiDotsThreeOutlineFill className="h-5 w-5" />
                 </th>
               </tr>
@@ -50,50 +72,54 @@ const CourseTable = ({ courses }: CourseTableProps) => {
                 >
                   <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-sm">
                     <Image
-                      src={course.imageUrl || '/default.jpg'}
+                      src={course.imageUrl || "/default.jpg"}
                       width={40}
                       height={40}
                       alt={course.title}
                       className="rounded-md object-cover"
+                      priority={false}
                     />
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-neutral-200">
                     {course.title}
                   </td>
                   <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                    {course.categoryName || 'None'}
+                    {course.categoryName || "None"}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
-                    {course.price !== null ? `$${course.price.toFixed(2)}` : '-'}
+                    {course.price !== null ? `$${course.price.toFixed(2)}` : "-"}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap">
                     {course.isPublished ? (
-                        <span className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-800 text-white dark:bg-white dark:text-neutral-800">Published</span>
+                      <span className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-800 text-white dark:bg-white dark:text-neutral-800">
+                        Published
+                      </span>
                     ) : (
-                        <span className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-500 text-white">Draft</span>
+                      <span className="inline-flex items-center gap-x-1.5 py-1.5 px-3 rounded-full text-xs font-medium bg-gray-500 text-white">
+                        Draft
+                      </span>
                     )}
-                    </td>
-
+                  </td>
                   <td className="hidden sm:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-800 dark:text-neutral-200">
                     {new Date(course.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-end">
                     <div className="flex items-center gap-x-2">
-                      <Link
+                      <LinkWithProgress
                         href={`/dashboard/instructor/courses/${course._id}`}
                         className="flex items-center rounded-lg bg-lime-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-lime-700"
                       >
                         <LuPencil className="h-4 w-4" />
                         <span className="sr-only">Edit</span>
-                      </Link>
+                      </LinkWithProgress>
 
-                      <Link
+                      <LinkWithProgress
                         href={`/dashboard/instructor/courses/${course._id}/quiz`}
                         className="flex items-center rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-cyan-700"
                       >
                         <MdQuiz className="h-4 w-4 mr-1" />
                         Quiz
-                      </Link>
+                      </LinkWithProgress>
                     </div>
                   </td>
                 </tr>
@@ -103,7 +129,7 @@ const CourseTable = ({ courses }: CourseTableProps) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+})
 
-export default CourseTable;
+export default CourseTable

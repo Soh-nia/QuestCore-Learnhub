@@ -84,6 +84,8 @@ export const metadata: Metadata = {
   description: 'View your learning analytics and progress',
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function StudentAnalyticsPage() {
   const session = await auth();
   if (!session?.user) {

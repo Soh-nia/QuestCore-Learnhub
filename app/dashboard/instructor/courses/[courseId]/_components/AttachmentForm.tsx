@@ -7,16 +7,16 @@ import { FaFileAlt } from "react-icons/fa";
 import { useActionState } from 'react';
 import { addAttachment, deleteAttachment, State } from '@/app/lib/action';
 import toast from 'react-hot-toast';
-import FileUpload from '@/app/components/FileUpload';
+import FileUpload from '@/app/_components/FileUpload';
 import { CourseI } from '@/types/course';
-
+import { memo } from "react"
 
 interface AttachmentFormProps {
     initialData: CourseI;
     courseId: string;
 }
 
-const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
+const AttachmentForm = memo(function AttachmentForm({ initialData, courseId }: AttachmentFormProps) {
   const initialState: State = { message: null, errors: {} };
   const [addState, addFormAction] = useActionState(addAttachment, initialState);
   const [deleteState, deleteFormAction] = useActionState(deleteAttachment, initialState);
@@ -151,6 +151,6 @@ const AttachmentForm = ({ initialData, courseId }: AttachmentFormProps) => {
       )}
     </div>
   );
-};
+})
 
 export default AttachmentForm;

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Search, BookOpen, Clock, X } from 'lucide-react';
 import Image from 'next/image';
-import Pagination from '@/app/components/Pagination';
+import Pagination from '@/app/_components/Pagination';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { toast } from 'react-hot-toast';

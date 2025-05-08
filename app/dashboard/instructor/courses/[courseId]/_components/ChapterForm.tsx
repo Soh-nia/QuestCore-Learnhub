@@ -6,18 +6,19 @@ import { LuPlus } from 'react-icons/lu';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 import { createChapter, updateChapterPositions, State } from '@/app/lib/action';
-import Spinner from '@/app/components/Spinner';
+import Spinner from '@/app/_components/Spinner';
 import toast from 'react-hot-toast';
 import { CourseI } from '@/types/course';
 import ChaptersList from './ChaptersList';
 import { BiLoaderCircle } from 'react-icons/bi';
+import { memo } from "react"
 
 interface ChapterFormProps {
   initialData: CourseI;
   courseId: string;
 }
 
-const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
+const ChapterForm = memo(function ChapterForm({ initialData, courseId }: ChapterFormProps) {
   const initialState: State = { message: null, errors: {} };
   const [createState, createFormAction] = useActionState(createChapter, initialState);
   const [updateState, updateFormAction] = useActionState(updateChapterPositions, initialState);
@@ -123,7 +124,7 @@ const ChapterForm = ({ initialData, courseId }: ChapterFormProps) => {
       )}
     </div>
   );
-};
+})
 
 function SubmitButton() {
   const { pending } = useFormStatus();

@@ -1,40 +1,54 @@
-import { auth } from '@/auth';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
-import { Metadata } from 'next';
-import Image from 'next/image';
-import { Suspense } from 'react';
-import { FaPlus } from 'react-icons/fa6';
-import CourseTable from './CourseTable';
-import CourseTableSkeleton from './CourseTableSkeleton';
-import Pagination from '@/app/components/Pagination';
-import { fetchInstructorCourses } from '@/app/lib/action';
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import type { Metadata } from "next";
+import Image from "next/image";
+import { Suspense } from "react";
+import { FaPlus } from "react-icons/fa6";
+import CourseTable from "./CourseTable";
+import CourseTableSkeleton from "./CourseTableSkeleton";
+import Pagination from "@/app/_components/Pagination";
+import { fetchInstructorCoursesWithCache } from '@/app/lib/action';
+import LinkWithProgress from "@/app/_components/link-with-progress";
 
 export const metadata: Metadata = {
-  title: 'Dashboard - Course List',
-  description: 'View all your courses',
+  title: "Dashboard - Course List",
+  description: "View all your courses",
 };
+
+export const dynamic = "force-dynamic";
+
+interface SearchParams {
+  search?: string;
+  page?: string;
+}
 
 export default async function InstructorCourses({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; page?: string }>;
+  searchParams: Promise<SearchParams>;
 }) {
   const session = await auth();
 
   if (!session?.user) {
-    redirect('/auth/signin');
+    redirect("/auth/signin");
   }
 
-  if (session.user.role !== 'instructor') {
-    redirect('/dashboard');
+  if (session.user.role !== "instructor") {
+    redirect("/dashboard");
   }
 
-  const { search = '', page = '1' } = await searchParams;
-  const pageNumber = parseInt(page, 10) || 1;
+  const { search = "", page = "1" } = await searchParams;
+  const pageNumber = Number.parseInt(page, 10) || 1;
   const pageSize = 10;
 
-  const { courses, totalCourses = 0, message, errors } = await fetchInstructorCourses({
+  // Use the optimized data fetching function
+  const {
+    courses,
+    totalCourses = 0,
+    message,
+    errors,
+  } = await fetchInstructorCoursesWithCache({
+    userId: session.user.id,
     search,
     page: pageNumber,
     pageSize,
@@ -58,12 +72,12 @@ export default async function InstructorCourses({
           <p className="text-center text-neutral-600 text-base sm:text-lg dark:text-neutral-300">
             No courses yet. Create one by clicking on the Create Course button.
           </p>
-          <Link
+          <LinkWithProgress
             href="/dashboard/instructor/courses/create"
             className="flex items-center rounded-lg bg-cyan-500 px-5 py-2.5 text-sm sm:text-base font-bold text-white transition-colors hover:bg-cyan-600"
           >
             Create Course
-          </Link>
+          </LinkWithProgress>
         </div>
       ) : (
         <Suspense fallback={<CourseTableSkeleton />}>
@@ -77,13 +91,13 @@ export default async function InstructorCourses({
                 placeholder="Search Course"
               />
             </form>
-            <Link
+            <LinkWithProgress
               href="/dashboard/instructor/courses/create"
               className="flex items-center justify-center rounded-lg bg-gray-800 px-5 py-2.5 text-sm sm:text-base font-medium text-white transition-colors hover:bg-gray-700"
             >
               <FaPlus className="mr-2 h-4 w-4" />
               New Course
-            </Link>
+            </LinkWithProgress>
           </div>
           <CourseTable courses={courses || []} />
           <Pagination itemCount={totalCourses} pageSize={pageSize} currentPage={pageNumber} />

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import SideBarLinks, { instructorRoutes, studentRoutes } from './SideBarLinks';
-import { SideBarLogo } from '@/app/components/Logo';
+import { SideBarLogo } from '@/app/_components/Logo';
 
 // Breadcrumb Component
 const Breadcrumb = () => {

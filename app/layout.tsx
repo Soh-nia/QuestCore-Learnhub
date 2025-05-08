@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import PrelineScriptWrapper from './components/PrelineScriptWrapper';
+import PrelineScriptWrapper from './_components/PrelineScriptWrapper';
 import { Toaster } from 'react-hot-toast';
 import { SessionProvider } from 'next-auth/react';
-
+import { GlobalLoading } from "@/app/_components/global-loading"
 
 export const metadata: Metadata = {
   title: "Questcore Learning Hub",
@@ -21,6 +21,7 @@ export default function RootLayout({
         className=''
       >
         <SessionProvider>
+          <GlobalLoading />
           {children}
           <PrelineScriptWrapper />
           <Toaster />

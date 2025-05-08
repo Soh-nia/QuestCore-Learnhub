@@ -1,14 +1,12 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { FiHome, FiBookOpen } from 'react-icons/fi';
 import classnames from 'classnames';
 import { ComponentType, SVGProps } from 'react';
 import { PiStudentBold } from "react-icons/pi";
 import { GrCertificate } from "react-icons/gr";
-
-
+import LinkWithProgress from "@/app/_components/link-with-progress";
 
 // Define route interface for TypeScript
 interface Route {
@@ -46,7 +44,8 @@ const SideBarLinks = () => {
 
         return (
           <li key={route.href}>
-            <Link
+            {/* <Link */}
+            <LinkWithProgress
               href={route.href}
               aria-current={isActive ? 'page' : undefined}
               className={classnames(
@@ -59,7 +58,7 @@ const SideBarLinks = () => {
             >
               <Icon className="shrink-0 size-4" height={24} width={24} />
               {route.label}
-            </Link>
+            </LinkWithProgress>
           </li>
         );
       })}

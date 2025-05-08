@@ -1,54 +1,53 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose"
 
-interface MongooseCache {
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-}
+// Cache the mongoose connection
+let cachedConnection: typeof mongoose | null = null
+let connectionPromise: Promise<typeof mongoose> | null = null
 
-declare global {
-    // eslint-disable-next-line no-var
-    var mongoose: MongooseCache;
-}
-
-const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
-
-if (!global.mongoose) {
-    global.mongoose = cached;
-}
-
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-    throw new Error('MONGODB_URI is not defined in .env.local');
-}
-
-const connectMongoose = async () => {
-    try {
-        if (cached.conn) {
-            console.log('Using cached MongoDB connection');
-            return cached.conn;
-        }
-
-        if (!cached.promise) {
-            console.log('Creating new MongoDB connection');
-            const opts = {
-                bufferCommands: false,
-            };
-
-            cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-                console.log('Connected to MongoDB Atlas via Mongoose');
-                console.log('Registered models:', Object.keys(mongoose.models));
-                return mongoose;
-            });
-        }
-
-        cached.conn = await cached.promise;
-        return cached.conn;
-    } catch (error) {
-        console.error('Mongoose connection error:', error);
-        cached.promise = null;
-        throw new Error(`Failed to connect to MongoDB: ${error}`);
+export default async function connectMongoose() {
+    if (cachedConnection) {
+        return cachedConnection
     }
-};
 
-export default connectMongoose;
+    if (connectionPromise) {
+        return connectionPromise
+    }
+
+    if (mongoose.connection.readyState === 1) {
+        cachedConnection = mongoose
+        return cachedConnection
+    }
+
+    // Set up connection options for better performance
+    const options = {
+        maxPoolSize: 20, // Increase connection pool size
+        minPoolSize: 10, // Maintain minimum connections
+        socketTimeoutMS: 45000, // Increase timeout
+        serverSelectionTimeoutMS: 30000,
+        family: 4, // Use IPv4, skip trying IPv6
+        connectTimeoutMS: 10000, // Reduce connection timeout
+        bufferCommands: true, // Buffer commands when connection is lost
+    }
+
+    try {
+        const MONGODB_URI = process.env.MONGODB_URI
+
+        if (!MONGODB_URI) {
+            throw new Error("Please define the MONGODB_URI environment variable")
+        }
+
+        // Create a connection promise
+        connectionPromise = mongoose.connect(MONGODB_URI, options)
+
+        // Wait for the connection
+        cachedConnection = await connectionPromise
+        connectionPromise = null
+
+        console.log("MongoDB connected successfully")
+        return cachedConnection
+    } catch (error) {
+        connectionPromise = null
+        console.error("MongoDB connection error:", error)
+        throw error
+    }
+}

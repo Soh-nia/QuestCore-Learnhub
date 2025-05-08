@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { unstable_cache } from "next/cache"
 import { auth } from '@/auth';
 import {
     CourseSchema,
@@ -42,119 +43,119 @@ export type State = {
     pageSize?: number;
 };
 
-export async function fetchInstructorCourses({
-    search = '',
-    page = 1,
-    pageSize = 10,
-}: {
-    search?: string;
-    page?: number;
-    pageSize?: number;
-}): Promise<State> {
-    try {
-        const session = await auth();
-        if (!session?.user) {
-            return {
-                message: 'Unauthorized: Please sign in.',
-                errors: { auth: ['User not authenticated'] },
-            };
-        }
-
-        await connectMongoose();
-
-        const user = await User.findOne({ email: session.user.email });
-        if (!user) {
-            return {
-                message: 'User not found in database.',
-                errors: { user: ['User not found'] },
-            };
-        }
-
-        // Build query
-        const query: CourseQuery = { userId: user._id };
-        if (search) {
-            query.title = { $regex: search, $options: 'i' };
-        }
-
-        const totalCourses = await Course.countDocuments(query);
-
-        // Fetch courses with pagination and populated category
-        const courses = (await Course.find(query)
-            .populate('categoryId')
-            .populate('quizzes')
-            .populate('attachments')
-            .populate('chapters')
-            .sort({ createdAt: -1 })
-            .skip((page - 1) * pageSize)
-            .limit(pageSize)
-            .lean()
-            .exec()) as unknown as RawCourse[];
-
-        // Transform to CourseI format
-        const formattedCourses: CourseI[] = courses.map((course) => ({
-            _id: course._id.toString(),
-            userId: course.userId.toString(),
-            title: course.title,
-            description: course.description || null,
-            imageUrl: course.imageUrl,
-            price: course.price || null,
-            isPublished: course.isPublished,
-            categoryId: course.categoryId ? course.categoryId.toString() : null,
-            categoryName: course.categoryId?.name || null,
-            quizzes: Array.isArray(course.quizzes)
-                ? course.quizzes.map((quiz) => ({
-                    _id: quiz._id.toString(), // Ensure quiz _id is a string
-                    courseId: quiz.courseId.toString(), // Ensure courseId is a string
-                    title: quiz.title,
-                    isRequiredForCompletion: quiz.isRequiredForCompletion,
-                    createdAt: quiz.createdAt,
-                    updatedAt: quiz.updatedAt,
-                }))
-                : [],
-            attachments: Array.isArray(course.attachments)
-                ? course.attachments.map((attachment) => ({
-                    _id: attachment._id.toString(), // Ensure attachment _id is a string
-                    name: attachment.name,
-                    url: attachment.url,
-                    courseId: attachment.courseId.toString(), // Ensure courseId is a string
-                    createdAt: attachment.createdAt,
-                    updatedAt: attachment.updatedAt,
-                }))
-                : [],
-            chapters: Array.isArray(course.chapters)
-                ? course.chapters.map((chapter) => ({
-                    _id: chapter._id.toString(), // Ensure chapter _id is a string
-                    title: chapter.title,
-                    description: chapter.description || null,
-                    videoUrl: chapter.videoUrl || null,
-                    position: chapter.position,
-                    isPublished: chapter.isPublished,
-                    isFree: chapter.isFree,
-                    courseId: chapter.courseId.toString(), // Ensure courseId is a string
-                    createdAt: chapter.createdAt,
-                    updatedAt: chapter.updatedAt,
-                }))
-                : [],
-            createdAt: course.createdAt,
-            updatedAt: course.updatedAt,
-        }));
-
-        return {
-            message: 'Courses fetched successfully.',
-            errors: {},
-            courses: formattedCourses,
-            totalCourses,
-            page,
-            pageSize,
-        };
-    } catch (error) {
-        console.error('fetchInstructorCourses error:', error);
-        return {
-            message: 'Failed to fetch courses.',
-            errors: { server: ['Internal server error'] },
-        };
-    }
+export async function invalidateCoursesCache() {
+    revalidatePath("/dashboard/instructor/courses")
 }
+
+export const fetchInstructorCoursesWithCache = unstable_cache(
+    async ({
+        userId,
+        search = "",
+        page = 1,
+        pageSize = 10,
+    }: {
+        userId: string
+        search?: string
+        page?: number
+        pageSize?: number
+    }): Promise<State> => {
+        try {
+            await connectMongoose()
+
+            // Convert string userId to ObjectId
+            const userObjectId = new mongoose.Types.ObjectId(userId)
+
+            // Build query
+            const query: CourseQuery = { userId: userObjectId }
+            if (search) {
+                query.title = { $regex: search, $options: "i" }
+            }
+
+            // Get total count for pagination
+            const totalCourses = await Course.countDocuments(query)
+
+            const courses = (await Course.find(query)
+                .populate("categoryId")
+                .populate("quizzes")
+                .populate("attachments")
+                .populate("chapters")
+                .sort({ createdAt: -1 })
+                .skip((page - 1) * pageSize)
+                .limit(pageSize)
+                .lean()
+                .exec()) as unknown as RawCourse[]
+
+            // Transform to CourseI format
+            const formattedCourses: CourseI[] = courses.map((course) => ({
+                _id: course._id.toString(),
+                userId: course.userId.toString(),
+                title: course.title,
+                description: course.description || null,
+                imageUrl: course.imageUrl,
+                price: course.price || null,
+                isPublished: course.isPublished,
+                categoryId: course.categoryId ? course.categoryId.toString() : null,
+                categoryName: course.categoryId?.name || null,
+                quizzes: Array.isArray(course.quizzes)
+                    ? course.quizzes.map((quiz) => ({
+                        _id: quiz._id.toString(),
+                        courseId: quiz.courseId.toString(),
+                        title: quiz.title,
+                        isRequiredForCompletion: quiz.isRequiredForCompletion,
+                        createdAt: quiz.createdAt,
+                        updatedAt: quiz.updatedAt,
+                    }))
+                    : [],
+                attachments: Array.isArray(course.attachments)
+                    ? course.attachments.map((attachment) => ({
+                        _id: attachment._id.toString(),
+                        name: attachment.name,
+                        url: attachment.url,
+                        courseId: attachment.courseId.toString(),
+                        createdAt: attachment.createdAt,
+                        updatedAt: attachment.updatedAt,
+                    }))
+                    : [],
+                chapters: Array.isArray(course.chapters)
+                    ? course.chapters.map((chapter) => ({
+                        _id: chapter._id.toString(),
+                        title: chapter.title,
+                        description: chapter.description || null,
+                        videoUrl: chapter.videoUrl || null,
+                        position: chapter.position,
+                        isPublished: chapter.isPublished,
+                        isFree: chapter.isFree,
+                        courseId: chapter.courseId.toString(),
+                        createdAt: chapter.createdAt,
+                        updatedAt: chapter.updatedAt,
+                    }))
+                    : [],
+                createdAt: course.createdAt,
+                updatedAt: course.updatedAt,
+            }))
+
+            return {
+                message: "Courses fetched successfully.",
+                errors: {},
+                courses: formattedCourses,
+                totalCourses,
+                page,
+                pageSize,
+            }
+        } catch (error) {
+            console.error("fetchInstructorCourses error:", error)
+            return {
+                message: "Failed to fetch courses.",
+                errors: { server: ["Internal server error"] },
+            }
+        }
+    },
+    ["instructor-courses"],
+    {
+        revalidate: 60 * 5,
+        tags: ["instructor-courses"],
+    },
+)
 
 export async function createCourse(prevState: State, formData: FormData): Promise<State> {
     const session = await auth();
@@ -197,7 +198,8 @@ export async function createCourse(prevState: State, formData: FormData): Promis
             isPublished: false,
         });
 
-        revalidatePath('/dashboard/instructor/courses');
+        // Invalidate the courses cache after creating a new course
+        await invalidateCoursesCache()
     } catch (error) {
         console.error('Error creating course:', error);
         if (error instanceof mongoose.Error) {
@@ -341,7 +343,7 @@ export async function updateCourse(prevState: State, formData: FormData): Promis
 
         await Course.findByIdAndUpdate(courseId, updateFields, { new: true });
 
-        revalidatePath('/dashboard/instructor/courses');
+        await invalidateCoursesCache()
         revalidatePath(`/dashboard/instructor/courses/${courseId}`);
 
         return { message: 'Course updated successfully.', errors: {} };
@@ -407,7 +409,7 @@ export async function deleteCourse(prevState: State, formData: FormData): Promis
         // Delete the course
         await Course.findByIdAndDelete(courseId);
 
-        revalidatePath('/dashboard/instructor/courses');
+        await invalidateCoursesCache()
 
         return { message: 'Course deleted successfully.', errors: {} };
     } catch (error) {
@@ -715,6 +717,11 @@ export async function updateChapterPositions(
     }
 }
 
+export async function invalidateChapterCache(courseId: string, chapterId: string) {
+    revalidatePath(`/dashboard/instructor/courses/${courseId}/chapters/${chapterId}`)
+    revalidatePath(`/dashboard/instructor/courses/${courseId}`)
+}
+
 export async function updateChapter(prevState: State, formData: FormData): Promise<State> {
     const session = await auth();
     if (!session?.user) {
@@ -796,8 +803,7 @@ export async function updateChapter(prevState: State, formData: FormData): Promi
         await Chapter.findByIdAndUpdate(chapterId, updateFields, { new: true });
 
         revalidatePath('/dashboard/instructor/courses');
-        revalidatePath(`/dashboard/instructor/courses/${courseId}`);
-        revalidatePath(`/dashboard/instructor/courses/${courseId}/chapters/${chapterId}`);
+        await invalidateChapterCache(courseId, chapterId)
 
         return {
             message: 'Chapter updated successfully.',

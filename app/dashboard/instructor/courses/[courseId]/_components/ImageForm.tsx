@@ -7,15 +7,16 @@ import { useActionState } from 'react';
 import { updateCourse, State } from '@/app/lib/action';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
-import FileUpload from '@/app/components/FileUpload';
+import FileUpload from '@/app/_components/FileUpload';
 import { CourseI } from '@/types/course';
+import { memo } from "react"
 
 interface ImageFormProps {
   initialData: CourseI;
   courseId: string;
 }
 
-const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
+const ImageForm = memo(function ImageForm({ initialData, courseId }: ImageFormProps) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(updateCourse, initialState);
   const [isEditing, setIsEditing] = useState(false);
@@ -96,7 +97,7 @@ const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
               Uploading and saving...
             </div>
           )}
-          <div className="text-sm text-muted-foreground mt-4 text-gray-700">
+          <div className="text-sm mt-4 text-gray-700">
             16:9 aspect ratio recommended
           </div>
           {state.errors?.imageUrl &&
@@ -112,6 +113,6 @@ const ImageForm = ({ initialData, courseId }: ImageFormProps) => {
       )}
     </div>
   );
-};
+})
 
 export default ImageForm;

@@ -1,14 +1,13 @@
-import Footer from '@/app/components/Footer'
-import Header from '@/app/components/Header'
+import Footer from '@/app/_components/Footer'
+import Header from '@/app/_components/Header'
 import { Lusitana } from 'next/font/google';
 import Link from 'next/link';
 import { HiUserGroup } from "react-icons/hi";
 import { GiBookmarklet } from "react-icons/gi";
 
-
-
-
 const lusitana = Lusitana({ subsets: ['latin'], weight: ['400', '700'], });
+
+export const dynamic = "force-dynamic";
 
 const SignUp = () => {
   return (

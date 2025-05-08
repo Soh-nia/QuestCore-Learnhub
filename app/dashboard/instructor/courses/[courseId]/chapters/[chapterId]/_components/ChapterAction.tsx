@@ -1,70 +1,73 @@
-'use client';
+"use client"
 
-import { useState, useEffect, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { useActionState } from 'react';
-import toast from 'react-hot-toast';
-import { LuTrash2 } from 'react-icons/lu';
-import { State, updateChapter, deleteChapter } from '@/app/lib/action';
-import { ChapterI } from '@/types/course';
+import { useState, useEffect, useTransition, useCallback } from "react"
+import { useRouter } from "next/navigation"
+import { useActionState } from "react"
+import toast from "react-hot-toast"
+import { LuTrash2 } from "react-icons/lu"
+import { type State, updateChapter, deleteChapter, invalidateChapterCache } from "@/app/lib/action"
+import type { ChapterI } from "@/types/course"
+import { memo } from "react"
 
 interface ChapterActionProps {
-  initialData: ChapterI;
-  courseId: string;
-  chapterId: string;
-  disabled: boolean;
+  initialData: ChapterI
+  courseId: string
+  chapterId: string
+  disabled: boolean
 }
 
-const ChapterAction = ({ initialData, courseId, chapterId, disabled }: ChapterActionProps) => {
-  const initialState: State = { message: null, errors: {} };
-  const [updateState, updateFormAction] = useActionState(updateChapter, initialState);
-  const [deleteState, deleteFormAction] = useActionState(deleteChapter, initialState);
-  const [isPending, startTransition] = useTransition();
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const router = useRouter();
+const ChapterAction = memo(function ChapterAction({ initialData, courseId, chapterId, disabled }: ChapterActionProps) {
+  const initialState: State = { message: null, errors: {} }
+  const [updateState, updateFormAction] = useActionState(updateChapter, initialState)
+  const [deleteState, deleteFormAction] = useActionState(deleteChapter, initialState)
+  const [isPending, startTransition] = useTransition()
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const router = useRouter()
 
   // Handle toast notifications for update and delete
   useEffect(() => {
-    if (updateState.message?.includes('successfully')) {
-      toast.success('Chapter updated successfully!');
-      router.refresh();
-    } else if (updateState.message && !updateState.message.includes('successfully')) {
-      toast.error(updateState.message);
+    if (updateState.message?.includes("successfully")) {
+      toast.success("Chapter updated successfully!")
+      invalidateChapterCache(courseId, chapterId)
+      router.refresh()
+    } else if (updateState.message && !updateState.message.includes("successfully")) {
+      toast.error(updateState.message)
     }
 
-    if (deleteState.message?.includes('successfully')) {
-      toast.success('Chapter deleted successfully!');
+    if (deleteState.message?.includes("successfully")) {
+      toast.success("Chapter deleted successfully!")
+      invalidateChapterCache(courseId, chapterId)
       setTimeout(() => {
-        router.push(`/dashboard/instructor/courses/${courseId}`);
-      }, 100);
-    } else if (deleteState.message && !deleteState.message.includes('successfully')) {
-      toast.error(deleteState.message);
+        router.push(`/dashboard/instructor/courses/${courseId}?success=true`)
+      }, 100)
+    } else if (deleteState.message && !deleteState.message.includes("successfully")) {
+      toast.error(deleteState.message)
     }
-  }, [updateState.message, deleteState.message, router, courseId]);
+  }, [updateState.message, deleteState.message, router, courseId, chapterId])
 
-  const handlePublishToggle = () => {
-    const formData = new FormData();
-    formData.append('courseId', courseId);
-    formData.append('chapterId', chapterId);
-    formData.append('isPublished', (!initialData.isPublished).toString());
+  const handlePublishToggle = useCallback(() => {
+    const formData = new FormData()
+    formData.append("courseId", courseId)
+    formData.append("chapterId", chapterId)
+    formData.append("isPublished", (!initialData.isPublished).toString())
     startTransition(() => {
-      updateFormAction(formData);
-    });
-  };
+      updateFormAction(formData)
+    })
+  }, [courseId, chapterId, initialData.isPublished, updateFormAction])
 
-  const handleDelete = () => {
-    setShowDeleteModal(true);
-  };
+  const handleDelete = useCallback(() => {
+    setShowDeleteModal(true)
+  }, [])
 
-  const confirmDelete = () => {
-    setShowDeleteModal(false);
-    const formData = new FormData();
-    formData.append('courseId', courseId);
-    formData.append('chapterId', chapterId);
+  const confirmDelete = useCallback(() => {
+    setShowDeleteModal(false)
+    const formData = new FormData()
+    formData.append("courseId", courseId)
+    formData.append("chapterId", chapterId)
     startTransition(() => {
-      deleteFormAction(formData);
-    });
-  };
+      deleteFormAction(formData)
+    })
+  }, [courseId, chapterId, deleteFormAction])
 
   return (
     <div className="flex flex-col gap-y-2">
@@ -73,9 +76,9 @@ const ChapterAction = ({ initialData, courseId, chapterId, disabled }: ChapterAc
           onClick={handlePublishToggle}
           disabled={isPending || (initialData.isPublished ? false : disabled)}
           className="py-2 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-cyan-500 text-white shadow-sm hover:bg-cyan-600 focus:outline-none focus:bg-cyan-600 disabled:opacity-50 disabled:pointer-events-none dark:bg-cyan-600 dark:hover:bg-cyan-700 dark:focus:bg-cyan-700"
-          title={disabled && !initialData.isPublished ? 'Complete all required fields to publish' : ''}
+          title={disabled && !initialData.isPublished ? "Complete all required fields to publish" : ""}
         >
-          {isPending ? 'Processing...' : initialData.isPublished ? 'Unpublish' : 'Publish'}
+          {isPending ? "Processing..." : initialData.isPublished ? "Unpublish" : "Publish"}
         </button>
         <button
           onClick={handleDelete}
@@ -93,20 +96,26 @@ const ChapterAction = ({ initialData, courseId, chapterId, disabled }: ChapterAc
       {showDeleteModal && (
         <div
           className={`fixed inset-0 z-80 backdrop-blur-xs flex items-center justify-center transition-opacity duration-200 ${
-            showDeleteModal ? 'opacity-100' : 'opacity-0 pointer-events-none'
+            showDeleteModal ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-chapter-modal"
         >
           <div
             className={`bg-white dark:bg-neutral-800 rounded-xl p-4 max-w-lg w-full border border-gray-200 dark:border-neutral-700 shadow-2xs transform transition-transform duration-200 ${
-              showDeleteModal ? 'scale-100' : 'scale-95'
+              showDeleteModal ? "scale-100" : "scale-95"
             }`}
           >
             <div className="flex justify-between items-center py-3 px-4 border-b border-gray-200 dark:border-neutral-700">
-              <h3 className="font-bold text-gray-800 dark:text-white">Delete Chapter</h3>
+              <h3 id="delete-chapter-modal" className="font-bold text-gray-800 dark:text-white">
+                Delete Chapter
+              </h3>
               <button
                 type="button"
                 className="size-8 inline-flex justify-center items-center gap-x-2 rounded-full border border-transparent bg-gray-100 text-gray-800 hover:bg-gray-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 dark:text-neutral-400"
                 onClick={() => setShowDeleteModal(false)}
+                aria-label="Close"
               >
                 <span className="sr-only">Close</span>
                 <svg
@@ -152,7 +161,7 @@ const ChapterAction = ({ initialData, courseId, chapterId, disabled }: ChapterAc
         </div>
       )}
     </div>
-  );
-};
+  )
+})
 
-export default ChapterAction;
+export default ChapterAction

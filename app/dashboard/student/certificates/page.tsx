@@ -71,6 +71,8 @@ export const metadata: Metadata = {
   description: 'View all your earned certificates',
 };
 
+export const dynamic = "force-dynamic";
+
 export default async function CertificatesPage() {
   const session = await auth();
   if (!session?.user) {

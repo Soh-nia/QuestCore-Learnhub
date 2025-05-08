@@ -6,16 +6,17 @@ import { LuPencil } from 'react-icons/lu';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 import { updateCourse, State } from '@/app/lib/action';
-import Spinner from '@/app/components/Spinner';
+import Spinner from '@/app/_components/Spinner';
 import toast from 'react-hot-toast';
 import { CourseI } from '@/types/course';
+import { memo } from "react"
 
 interface DescriptionFormProps {
   initialData: CourseI;
   courseId: string;
 }
 
-const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
+const DescriptionForm = memo(function DescriptionForm({ initialData, courseId }: DescriptionFormProps) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(updateCourse, initialState);
   const [isEditing, setIsEditing] = useState(false);
@@ -82,7 +83,7 @@ const DescriptionForm = ({ initialData, courseId }: DescriptionFormProps) => {
       )}
     </div>
   );
-};
+})
 
 function SubmitButton() {
   const { pending } = useFormStatus();

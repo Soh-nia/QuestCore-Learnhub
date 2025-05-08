@@ -6,7 +6,7 @@ import { LuPencil } from 'react-icons/lu';
 import { useFormStatus } from 'react-dom';
 import { useActionState } from 'react';
 import { updateChapter, State } from '@/app/lib/action';
-import Spinner from '@/app/components/Spinner';
+import Spinner from '@/app/_components/Spinner';
 import toast from 'react-hot-toast';
 import { ChapterI } from '@/types/course';
 

@@ -7,8 +7,9 @@ import { useRouter } from 'next/navigation';
 import { LuPencil } from 'react-icons/lu';
 import toast from 'react-hot-toast';
 import { updateCourse, State } from '@/app/lib/action';
-import Spinner from '@/app/components/Spinner';
+import Spinner from '@/app/_components/Spinner';
 import { CourseI } from '@/types/course';
+import { memo } from "react"
 
 interface Category {
   _id: string;
@@ -21,7 +22,7 @@ interface CategoryFormProps {
   categories: Category[];
 }
 
-const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) => {
+const CategoryForm = memo(function CategoryForm({ initialData, courseId, categories }: CategoryFormProps) {
   const initialState: State = { message: null, errors: {} };
   const [state, formAction] = useActionState(updateCourse, initialState);
   const [isEditing, setIsEditing] = useState(false);
@@ -222,7 +223,7 @@ const CategoryForm = ({ initialData, courseId, categories }: CategoryFormProps) 
       )}
     </div>
   );
-};
+})
 
 function SubmitButton() {
   const { pending } = useFormStatus();
