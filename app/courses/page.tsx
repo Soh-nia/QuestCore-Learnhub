@@ -12,6 +12,7 @@ import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import { auth } from '@/auth';
 import mongoose from 'mongoose';
+import Chat from '../_components/AIChatBot';
 
 interface Category {
   _id: string;
@@ -103,6 +104,7 @@ export default async function CoursesPage() {
         </Suspense>
       </div>
       <Footer />
+      <Chat />
     </main>
   );
 }

@@ -15,6 +15,7 @@ import { TbCertificate } from "react-icons/tb";
 import { RawCourseHome, RawCategory } from '@/types/course';
 import { auth } from '@/auth';
 import mongoose from 'mongoose';
+import Chat from './_components/AIChatBot';
 
 const lusitana = Lusitana({ subsets: ['latin'], weight: ['400', '700'], });
 
@@ -113,7 +114,7 @@ export default async function Home() {
   );
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <main id="content">
         <div className="overflow-hidden">
             <Header />
@@ -249,7 +250,9 @@ export default async function Home() {
           </div>
       </div>
 
+      <Chat />
+
       <Footer />
-    </>
+    </div>
   );
 }
