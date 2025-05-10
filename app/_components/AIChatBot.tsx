@@ -16,13 +16,13 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 // Define a unique key for localStorage
 const CHAT_STORAGE_KEY = "questcore-chat-history"
 
-
 export default function Chat() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [showChatIcon, setShowChatIcon] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatIconRef = useRef<HTMLButtonElement>(null)
+//   const [chatHeight, setChatHeight] = useState(400) // Default height
 
   // Load saved messages from localStorage on initial render
   const loadSavedMessages = (): Message[] => {
@@ -61,6 +61,20 @@ export default function Chat() {
       }
     },
   })
+
+//   Calculate appropriate chat height based on viewport
+//   useEffect(() => {
+//     const calculateHeight = () => {
+//       const viewportHeight = window.innerHeight
+//       // Use 60% of viewport height, but not less than 300px or more than 500px
+//       const calculatedHeight = Math.min(Math.max(viewportHeight * 0.6, 400), 500)
+//       setChatHeight(calculatedHeight)
+//     }
+
+//     calculateHeight()
+//     window.addEventListener("resize", calculateHeight)
+//     return () => window.removeEventListener("resize", calculateHeight)
+//   }, [])
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
@@ -155,15 +169,15 @@ export default function Chat() {
       <AnimatePresence>
         {isChatOpen && showChatIcon && (
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.8 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.8 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-20 right-4 z-50 w-[95%] md:w-[500px]"
+            className="fixed bottom-18 right-4 z-50"
           >
-            <Card className="border-2 shadow-xl">
-              <CardHeader className="bg-lime-700 text-white rounded-t-lg">
-                <CardTitle className="flex justify-between items-center pt-5">
+            <Card className="border shadow-xl flex flex-col w-[95%] md:w-[450px]">
+              <CardHeader className="bg-lime-700 text-white p-4">
+                <CardTitle className="flex justify-between items-center">
                   <span>QuestCore Assistant</span>
                   <div className="flex gap-2">
                     {messages.length > 0 && (
@@ -189,8 +203,8 @@ export default function Chat() {
                 </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <ScrollArea className="h-[350px] p-4">
-                  <div ref={scrollAreaRef}>
+                <ScrollArea className="h-[250px]">
+                  <div className="p-3" ref={scrollAreaRef}>
                     {messages.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 p-4">
                         <MessageCircle className="size-12 mb-4 text-lime-600" />
@@ -209,20 +223,19 @@ export default function Chat() {
                                 message.role === "user" ? "bg-lime-700 text-white" : "bg-gray-100 text-gray-800"
                               }`}
                             >
-                              {/* Use className approach instead of components prop */}
                               <ReactMarkdown
                                 remarkPlugins={[RemarkGfm]}
                                 components={{
                                   code: ({ className, children, ...props }) => {
                                     const match = /language-(\w+)/.exec(className || "")
                                     return match ? (
-                                      <pre className={"bg-gray-200 px-1 rounded"}>
+                                      <pre className="bg-gray-200 px-1 rounded">
                                         <code {...props} className={className}>
                                           {children}
                                         </code>
                                       </pre>
                                     ) : (
-                                      <code {...props} className={"bg-gray-200 px-2 rounded"}>
+                                      <code {...props} className="bg-gray-200 px-2 rounded">
                                         {children}
                                       </code>
                                     )
@@ -252,7 +265,6 @@ export default function Chat() {
                             </button>
                           </div>
                         )}
-                        {/* This empty div serves as a marker for scrolling to the bottom */}
                         <div ref={messagesEndRef} />
                       </div>
                     )}

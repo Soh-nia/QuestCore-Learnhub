@@ -90,9 +90,10 @@ export default async function CoursesPage() {
     instructorImage: course.userId?.image || '/default.png',  }));
 
   return (
-    <main id="content" className="min-h-screen">
+    <div className="min-h-screen">
+    <main id="content">
       <Header />
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="max-w-6xl mx-auto w-full">
       <Suspense
           fallback={
             <div className="flex justify-center items-center h-64">
@@ -103,8 +104,9 @@ export default async function CoursesPage() {
           <CoursesClient categories={categories} initialCourses={courses} enrolledCourses={enrolledCourses} />
         </Suspense>
       </div>
-      <Footer />
-      <Chat />
     </main>
+    <Chat />
+    <Footer />
+    </div>
   );
 }
