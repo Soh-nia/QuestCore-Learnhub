@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useEffect, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import RemarkGfm from "remark-gfm"
@@ -16,13 +18,20 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 // Define a unique key for localStorage
 const CHAT_STORAGE_KEY = "questcore-chat-history"
 
+// Common questions that users might ask
+const SUGGESTED_QUESTIONS = [
+  "How do I enroll in a course?",
+  "What payment methods are accepted?",
+  "How do I earn a certificate?",
+  "Can I access courses on mobile?",
+]
+
 export default function Chat() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const [showChatIcon, setShowChatIcon] = useState(false)
   const scrollAreaRef = useRef<HTMLDivElement>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const chatIconRef = useRef<HTMLButtonElement>(null)
-//   const [chatHeight, setChatHeight] = useState(400) // Default height
 
   // Load saved messages from localStorage on initial render
   const loadSavedMessages = (): Message[] => {
@@ -62,19 +71,16 @@ export default function Chat() {
     },
   })
 
-//   Calculate appropriate chat height based on viewport
-//   useEffect(() => {
-//     const calculateHeight = () => {
-//       const viewportHeight = window.innerHeight
-//       // Use 60% of viewport height, but not less than 300px or more than 500px
-//       const calculatedHeight = Math.min(Math.max(viewportHeight * 0.6, 400), 500)
-//       setChatHeight(calculatedHeight)
-//     }
-
-//     calculateHeight()
-//     window.addEventListener("resize", calculateHeight)
-//     return () => window.removeEventListener("resize", calculateHeight)
-//   }, [])
+  // Add this function to handle suggested questions
+  const handleSuggestedQuestion = (question: string) => {
+    // Set the input value to the suggested question
+    handleInputChange({ target: { value: question } } as React.ChangeEvent<HTMLInputElement>)
+    // Submit the form with a slight delay to show the user what's being asked
+    setTimeout(() => {
+      const fakeEvent = new Event("submit") as unknown as React.FormEvent<HTMLFormElement>
+      handleSubmit(fakeEvent)
+    }, 100)
+  }
 
   // Save messages to localStorage whenever they change
   useEffect(() => {
@@ -173,7 +179,7 @@ export default function Chat() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.2 }}
-            className="fixed bottom-18 right-4 z-50"
+            className="fixed bottom-20 right-4 z-50"
           >
             <Card className="border shadow-xl flex flex-col w-[95%] md:w-[450px]">
               <CardHeader className="bg-lime-700 text-white p-4">
@@ -204,12 +210,28 @@ export default function Chat() {
               </CardHeader>
               <CardContent className="p-0">
                 <ScrollArea className="h-[250px]">
-                  <div className="p-3" ref={scrollAreaRef}>
+                  <div className="p-4" ref={scrollAreaRef}>
                     {messages.length === 0 ? (
                       <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 p-4">
                         <MessageCircle className="size-12 mb-4 text-lime-600" />
                         <p className="text-lg font-medium">How can I help you today?</p>
                         <p className="text-sm mt-2">Ask about courses, enrollment, or get learning recommendations.</p>
+
+                        {/* Suggested questions */}
+                        <div className="mt-6 space-y-2 w-full">
+                          <p className="text-sm text-gray-500">Try asking:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {SUGGESTED_QUESTIONS.map((question, index) => (
+                              <button
+                                key={index}
+                                onClick={() => handleSuggestedQuestion(question)}
+                                className="px-3 py-1.5 text-sm bg-lime-50 text-lime-700 rounded-full hover:bg-lime-100 transition-colors"
+                              >
+                                {question}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-4 pt-4">
@@ -265,6 +287,7 @@ export default function Chat() {
                             </button>
                           </div>
                         )}
+                        {/* This empty div serves as a marker for scrolling to the bottom */}
                         <div ref={messagesEndRef} />
                       </div>
                     )}

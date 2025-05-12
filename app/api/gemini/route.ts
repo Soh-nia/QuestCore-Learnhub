@@ -1,6 +1,6 @@
 import { streamText, Message } from "ai";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { initialMessage } from "@/lib/data";
+import { initialSystemMessage } from "@/lib/data";
 
 const google = createGoogleGenerativeAI({
     apiKey: process.env.GOOGLE_API_KEY || "",
@@ -14,7 +14,8 @@ const buildGoogleGenAiPrompt = (messages: Message[]): Message[] => [
     {
         id: generateId(),
         role: "user",
-        content: initialMessage.content,
+        // content: initialMessage.content,
+        content: initialSystemMessage,
     },
     ...messages.map((message) => ({
         id: message.id || generateId(),
@@ -34,4 +35,3 @@ export async function POST(req: Request) {
 
     return result.toDataStreamResponse()
 }
-
